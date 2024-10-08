@@ -1,32 +1,18 @@
 #include <iostream>
 #include <cstdlib>
-#include <cctype>
 #include <vector>
 #include <map>
 
 using namespace std;
 
-bool isDigit(string text) {
-    char character;
-    bool found = false;
-
+bool checkNum(string text) {
     for (int i = 0; i < text.length(); i++) {
-        character = text[i];
-
-        if (character >= '0' && character <= '9') {
-            continue;
-        } else {
-            found = true;
-
-            break;
+        if (isdigit(text[i]) == false) {
+            return false;
         }
     }
 
-    if (found) {
-        return found;
-    } else {
-        return found;
-    }
+    return true;
 }
 
 bool toConfirm(string question) {
@@ -90,14 +76,18 @@ void storage(string task, string category, string description, int level, bool s
 
 void createTask() {
     string task, desc, category, importance, choice;
+    bool correctInput;
 
     while (true) {
         do {
+            correctInput = false;
+
+            // This part will ask the user for details of the task
             cout << "Enter task: ";
             cin.ignore();
             getline(cin, task);
 
-            cout << "Add Description of the Task: ";
+            cout << "Add Description of the task: ";
             cin.ignore();
             getline(cin, desc);
 
@@ -109,7 +99,13 @@ void createTask() {
                 cout<<"Enter Level of Importance (1/2/3): ";
                 cin.ignore();
                 getline(cin, importance);
-            } while (isDigit(importance) && stoi(importance) >= 1 && stoi(importance) <= 3); // checks if the input is a digit
+
+                if (checkNum(importance)) { // This will ensure that the input is correct
+                    if (stoi(importance) >= 1 && stoi(importance) <= 3) {
+                        correctInput = true;
+                    }
+                }
+            } while (!correctInput); // checks if the input is a digit. The '!' is there to flip the value of the correctInput
 
             clearScreen(); // This block of code displays the input values to confirm if it's correct
             cout << "TASK: " << task << endl;
@@ -134,32 +130,33 @@ int main() {
     // MAIN MENU
     while (running) {
         do {
-            clearScreen();
             cout << "GROUP 5 - TO-DO LIST APP\n====================\n"; // The title of the program
             cout << "\nMAIN MENU\n1.) Create Task\n2.) Remove Task\n3.) Update Task\n4.) Display Task\n5.) Exit\n\n"; // Options
 
             cout << "Select from the menu (1/2/3/4/5): ";
-            cin.ignore();
             getline(cin, choice);
-        } while (isDigit(choice));
+        } while (!checkNum(choice));
 
         switch (stoi(choice)) {
-            case 1:
+            case 1: // Creation of Task
                 createTask();
 
                 break;
-            case 2:
+            case 2: // Removal of Task
+
                 break;
-            case 3:
+            case 3: // Update of status
+
                 break;
-            case 4:
+            case 4: // Display all of the task
+
                 break;
             case 5:
                 running = false;
 
                 break;
             default:
-                cout << "ERROR: INVALID OPTION!\n";
+                cout << "ERROR: INVALID OPTION\n";
         }
     }
 
