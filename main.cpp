@@ -84,6 +84,7 @@ void storage(string task, string category, string description, int level, bool s
         case 4: // Displays the tasks in an organized way
             break;
         default:
+            cout << "ERROR: INVALID ACTION\n";
     }
 }
 
