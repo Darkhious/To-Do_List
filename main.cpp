@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -20,7 +21,6 @@ bool toConfirm(string question) {
 
     while (true) {
         cout << question << " (Y/N): ";
-        cin.ignore();
         getline(cin, choice);
 
         if (choice == "Y" || choice == "y") {
@@ -33,24 +33,34 @@ bool toConfirm(string question) {
     }
 }
 
+void printLine(string reference) {
+    for (int i = 0; i < reference.length(); i++) {
+        cout << "--";
+    }
+
+    cout << endl;
+}
+
 void clearScreen() {
     system("cls");
 }
 
-void displayTasks(string task, string category, string description, int importance) {
-    
+void displayTasks(string task, string description, string category, int importance) {
+    cout << "[]\t|" << task << "\t\t\t|" << description << "\t\t\t|" << category << endl;
 }
 
 void storage(string task, string category, string description, int level, bool status, int action) {
-    map<string, bool> unimportant = {};
-    map<string, bool> important = {};
-    map<string, bool> rush = {};
-    vector<string> allTasks = {};
-    vector<string> cat = {};
-    vector<string> desc = {};
+    static map<string, bool> unimportant;
+    static map<string, bool> important;
+    static map<string, bool> rush;
+    static vector<string> allTasks;
+    static vector<string> cat;
+    static vector<string> desc;
+    string tableHeaders = "STATUS\t|\t\tTASK\t\t|\t\t\tDESCRIPTION\t\t\t|\tCATEGORY\n";
+    string wait;
 
     switch (action) { // ACTIONS: 1 FOR CREATE | 2 FOR REMOVE | 3 FOR UPDATE | 4 FOR DISPLAY
-        case 1: // Adds the receive value to the storages
+        case 1: // Adds the received values to storage
             if (level == 1) {
                 unimportant.insert({task, status});
             } else if (level == 2) {
@@ -64,30 +74,55 @@ void storage(string task, string category, string description, int level, bool s
             allTasks.push_back(task);
             cat.push_back(category);
             desc.push_back(description);
-
             break;
-        case 2: // Deletion of tasks and its components
 
-            break;
-        case 3: // Updates the status of the task
-            break;
-        case 4: // Displays the tasks in an organized way
-            cout << "YOUR TO-DO LIST\n====================\n";
-            cout << "STATUS\t|\tTASK\t|\tDESCRIPTION\t|\tCATEGORY\t|\tIMPORTANCE";
-            for (int i = 0; i < allTasks.size(); i++) {
+        case 4: 
+            clearScreen();
+            cout << "==========YOUR TO-DO LIST==========\n";
+            cout << tableHeaders;
+            printLine(tableHeaders);
+            cout << "\t\t\t\t\tRUSH\n";
+            printLine(tableHeaders);
 
-                for (auto U_Task : unimportant) {
-                    if (allTasks[i] == U_Task.first) {
-                        task = allTasks[i];
-
-                        displayTasks(task, cat[i], desc[i], 1);
-
-                        break;
+            for (auto R_Task : rush) {
+                for (int i = 0; i < allTasks.size(); i++) {
+                    if (allTasks[i] == R_Task.first) {
+                        displayTasks(allTasks[i], desc[i], cat[i], 3); // 3 corresponds to "Rush"
                     }
                 }
             }
 
+            cout << endl;
+            printLine(tableHeaders);
+            cout << "\t\t\t\t     IMPORTANT\n";
+            printLine(tableHeaders);
+
+            for (auto I_Task : important) {
+                for (int i = 0; i < allTasks.size(); i++) {
+                    if (allTasks[i] == I_Task.first) {
+                        displayTasks(allTasks[i], desc[i], cat[i], 2); // 2 corresponds to "Important"
+                    }
+                }
+            }
+
+            cout << endl;
+            printLine(tableHeaders);
+            cout << "\t\t\t\t   DAILT ROUTINE\n";
+            printLine(tableHeaders);
+
+            for (auto U_Task : unimportant) {
+                for (int i = 0; i < allTasks.size(); i++) {
+                    if (allTasks[i] == U_Task.first) {
+                        displayTasks(allTasks[i], desc[i], cat[i], 1); // 1 corresponds to "Unimportant"
+                    }
+                }
+            }
+            printLine(tableHeaders);
+            cout << "Press any key to continue: ";
+            getline(cin, wait);
+
             break;
+
         default:
             cout << "ERROR: INVALID ACTION\n";
     }
@@ -103,20 +138,16 @@ void createTask() {
 
             // This part will ask the user for details of the task
             cout << "Enter task: ";
-            cin.ignore();
             getline(cin, task);
 
             cout << "Add Description of the task: ";
-            cin.ignore();
             getline(cin, desc);
 
             cout << "Enter the category (Study/Work/...): ";
-            cin.ignore();
             getline(cin, category);
             do {
-                cout<<"\nLEVEL OF IMPORTANCE\n1 - Unimportant/Daily Routine\n2 - Important\n3- Rush\n\n";
+                cout<<"\nLEVEL OF IMPORTANCE\n1 - Unimportant/Daily Routine\n2 - Important\n3 - Rush\n\n";
                 cout<<"Enter Level of Importance (1/2/3): ";
-                cin.ignore();
                 getline(cin, importance);
 
                 if (checkNum(importance)) { // This will ensure that the input is correct
@@ -136,10 +167,16 @@ void createTask() {
         // Sending the value to the storage
         storage(task, category, desc, stoi(importance), false, 1);
 
-        if (!toConfirm("Do you want to add more task?")) {
+        if (!toConfirm("\nDo you want to add more task?")) {
             break;
         }
+
+        clearScreen();
     }
+}
+
+void saveFile() {
+
 }
 
 int main() {
@@ -149,6 +186,7 @@ int main() {
     // MAIN MENU
     while (running) {
         do {
+            clearScreen();
             cout << "GROUP 5 - TO-DO LIST APP\n====================\n"; // The title of the program
             cout << "\nMAIN MENU\n1.) Create Task\n2.) Remove Task\n3.) Update Task\n4.) Display Task\n5.) Exit\n\n"; // Options
 
@@ -168,6 +206,7 @@ int main() {
 
                 break;
             case 4: // Display all of the task
+                storage("", "", "", 0, false, 4);
 
                 break;
             case 5:
