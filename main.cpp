@@ -37,11 +37,15 @@ void clearScreen() {
     system("cls");
 }
 
+void displayTasks(string task, string category, string description, int importance) {
+    
+}
+
 void storage(string task, string category, string description, int level, bool status, int action) {
     map<string, bool> unimportant = {};
     map<string, bool> important = {};
     map<string, bool> rush = {};
-    vector<string> tasks = {};
+    vector<string> allTasks = {};
     vector<string> cat = {};
     vector<string> desc = {};
 
@@ -57,7 +61,7 @@ void storage(string task, string category, string description, int level, bool s
                 cout << "ERROR: INVALID LEVEL OF IMPORTANCE\n";
             }
 
-            tasks.push_back(task);
+            allTasks.push_back(task);
             cat.push_back(category);
             desc.push_back(description);
 
@@ -68,6 +72,21 @@ void storage(string task, string category, string description, int level, bool s
         case 3: // Updates the status of the task
             break;
         case 4: // Displays the tasks in an organized way
+            cout << "YOUR TO-DO LIST\n====================\n";
+            cout << "STATUS\t|\tTASK\t|\tDESCRIPTION\t|\tCATEGORY\t|\tIMPORTANCE";
+            for (int i = 0; i < allTasks.size(); i++) {
+
+                for (auto U_Task : unimportant) {
+                    if (allTasks[i] == U_Task.first) {
+                        task = allTasks[i];
+
+                        displayTasks(task, cat[i], desc[i], 1);
+
+                        break;
+                    }
+                }
+            }
+
             break;
         default:
             cout << "ERROR: INVALID ACTION\n";
