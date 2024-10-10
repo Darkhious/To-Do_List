@@ -67,7 +67,7 @@ void displayTasks(bool check, string task, string description, string category, 
     if (check) {
         cout << "[/]\t|" << task;
     } else {
-        cout << "[]\t|" << task;
+        cout << "[ ]\t|" << task;
     }
     printTab(task);
     cout << "|" << description;
@@ -82,8 +82,9 @@ void storage(string filename, string task, string category, string description, 
     static vector<string> allTasks;
     static vector<string> cat;
     static vector<string> desc;
+    int targetIndex;
     string tableHeaders = "STATUS\t|\t\tTASK\t\t|\t\tDESCRIPTION\t\t|\tCATEGORY\n";
-    string wait;
+    string wait, remove, update;
 
     switch (action) { // ACTIONS: 1 FOR CREATE | 2 FOR REMOVE | 3 FOR UPDATE | 4 FOR DISPLAY
         case 1: // Adds the received values to storage
@@ -102,6 +103,71 @@ void storage(string filename, string task, string category, string description, 
             desc.push_back(description);
             break;
 
+        case 2:
+            do {
+                clearScreen();
+                cout << "REMOVE TASK\n";
+                for (int i = 0; i < allTasks.size(); i++) {
+                    cout << (i + 1) << ".) " << allTasks[i] << endl;
+                }
+
+                cout << "\nSelect the number of the task you want to remove ('0' to EXIT): ";
+                getline(cin, remove);
+
+                if (remove == "0") {
+                    break;
+                }
+            } while (checkNum(remove) == false);
+
+            if (remove == "0") {
+                break;
+            } else {
+                targetIndex = stoi(remove) - 1;
+                task = allTasks[targetIndex];
+
+                // REMOVES ALL OF THE RELATED COMPONENTS
+                allTasks.erase(allTasks.begin() + targetIndex);
+                cat.erase(cat.begin() + targetIndex);
+                desc.erase(cat.begin() + targetIndex);
+                unimportant.erase(task);
+                important.erase(task);
+                rush.erase(task);
+
+            }
+
+            break;
+        case 3:
+            do {
+                clearScreen();
+                cout << "UPDATE TASK\n";
+                for (int i = 0; i < allTasks.size(); i++) {
+                    cout << (i + 1) << ".) " << allTasks[i] << endl;
+                }
+
+                cout << "\nSelect the number of the task you want to update ('0' to EXIT): ";
+                getline(cin, update);
+
+                if (update == "0") {
+                    break;
+                }
+            } while (checkNum(update) == false);
+
+            if (update == "0") {
+                break;
+            } else {
+                targetIndex = stoi(update) - 1;
+                task = allTasks[targetIndex];
+
+                if (rush.find(task) != rush.end()) {
+                    rush[task] = !rush[task];
+                } else if (important.find(task) != important.end()) {
+                    important[task] = !important[task];
+                } else if (unimportant.find(task) != unimportant.end()) {
+                    unimportant[task] = !unimportant[task];
+                }          
+            }
+
+            break;
         case 4: 
             clearScreen();
             cout << "==========YOUR TO-DO LIST==========\n";
@@ -377,9 +443,11 @@ int main() {
 
                 break;
             case 2: // Removal of Task
+                storage("", "", "", "", 0, false, 2);
 
                 break;
             case 3: // Update of status
+                storage("", "", "", "", 0, false, 3);
 
                 break;
             case 4: // Display all of the task
