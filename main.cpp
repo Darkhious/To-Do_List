@@ -398,9 +398,9 @@ string logIn() {
         cout << "Enter your username: ";
         getline(cin, username);
 
-        filename = username + ".txt"; // the username is also the filename.
+        filename = username + ".chk"; // the username is also the filename.
 
-        ifstream user(filename); // takes the user name and adds the .txt file to look for the save file
+        ifstream user(filename); // takes the user name and adds the .chk file to look for the save file
         if (user.is_open()) {
             readFile(filename);
 
@@ -408,7 +408,7 @@ string logIn() {
 
             break;
         } else {
-            ofstream user(username + ".txt");
+            ofstream user(username + ".chk");
 
             break;
         }
@@ -455,7 +455,7 @@ int main() {
 
                 break;
             case 5:
-                storage(username + ".txt", "", "", "", 0, false, 5);
+                storage(username + ".chk", "", "", "", 0, false, 5);
 
                 running = false;
 
